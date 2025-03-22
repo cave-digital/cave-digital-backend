@@ -21,9 +21,24 @@ router.get("/:id", authMiddleware, async (req, res) => {
 });
 
 router.put("/:id", authMiddleware, async (req, res) => {
-  const task = await Task.findOneAndUpdate({ _id: req.params.id, userId: req.user.userId }, req.body, { new: true });
-  if (!task) return res.status(404).json({ error: "Task not found" });
-  res.json(task);
+  try {
+    console.log("Update Request Body:", req.body);
+    console.log("Task ID:", req.params.id);
+    console.log("User ID:", req.user.userId);
+
+    const task = await Task.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user.userId },
+      req.body,
+      { new: true }
+    );
+
+    if (!task) return res.status(404).json({ error: "Task not found" });
+
+    res.json(task);
+  } catch (error) {
+    console.error("Update Task Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 router.delete("/:id", authMiddleware, async (req, res) => {
